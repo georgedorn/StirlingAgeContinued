@@ -419,7 +419,7 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
         }
     }
 
-    public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve, Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping, int schematicSeed)
+    public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve, Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping, int schematicSeed, bool resolveImports)
     {
         foreach (var slot in Inventory)
         {
@@ -429,7 +429,7 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
                 slot.Itemstack = null;
             } else
             {
-                slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping);
+                slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping, resolveImports);
             }
         }
     }

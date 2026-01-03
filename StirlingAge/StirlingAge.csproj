@@ -5,7 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>12</LangVersion>
     <OutputPath>bin</OutputPath>
-    <Version>1.21.0</Version>
+    <Version>1.21.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="VintagestoryAPI">
@@ -22,11 +22,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\resources\**">
+    <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Target Name="Package" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
-    <ZipDirectory DestinationFile="bin/$(TargetName)-$(Version).zip" SourceDirectory="$(TargetDir)" Overwrite="true" />
-  </Target>
 </Project>

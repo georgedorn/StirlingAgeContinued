@@ -8,8 +8,8 @@
         "Corfid Bizna"
     ],
     "description": "Adds a stirling engine that you can use to convert fuel into mechanical work.",
-    "version": "1.21.0",
-    "networkVersion": "1.21.0",
+    "version": "1.21.1",
+    "networkVersion": "1.21.1",
     "dependencies": {
         "game": "1.21.0"
     }
