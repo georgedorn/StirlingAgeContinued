@@ -19,16 +19,16 @@ public class BEBehaviorStirlingEngineRotor : BEBehaviorMPRotor {
     protected override float TorqueFactor => target_torque;
 
     BlockEntity our_entity;
-    IStirlingBurner burner;
+    IStirlingBurner? burner;
 
-    public BEBehaviorStirlingEngineRotor(BlockEntity blockentity) : base(blockentity) {
-        our_entity = blockentity;
-        burner = null; // defer finding the burner
+    public BEBehaviorStirlingEngineRotor(BlockEntity blockEntity) : base(blockEntity) {
+        our_entity = blockEntity;
+        // burner is deferred to UpdateMech
     }
 
     public override void Initialize(ICoreAPI api, JsonObject properties) {
         base.Initialize(api, properties);
-        Blockentity.RegisterGameTickListener(UpdateMech, 1000);
+        our_entity.RegisterGameTickListener(UpdateMech, 1000);  // Unknown if this change is needed; used to be Blockentity.RegisterGameTickListener, change it back if this breaks.  THIS USED TO WORK.
     }
 
     private void UpdateMech(float dt) {

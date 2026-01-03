@@ -12,7 +12,17 @@ using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
 public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHeatSource, IFirePit, IStirlingBurner {
-    internal InventoryStirlingEngineBurner inventory;
+    //internal InventoryStirlingEngineBurner inventory;  // Custom subclass, avoid if possible
+
+    internal InventoryGeneric inventory;
+
+    public BlockEntityStirlingEngineBurner()
+    {
+        // The old, maybe hacky way we did this:
+        //inventory = new InventoryStirlingEngineBurner("", null);
+
+        inventory = new InventoryGeneric(1, "stirlingburner-0", null, null);
+    }
     // Temperature before the half second tick
     public float prevFurnaceTemperature = 20;
     // Current temperature of the furnace
@@ -37,39 +47,23 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     public float HotSideTemperature => furnaceTemperature;
     public float ColdSideTemperature => enviromentTemperature();
 
-    GuiDialogBlockEntityStirlingEngineBurner clientDialog;
+    GuiDialogBlockEntityStirlingEngineBurner? clientDialog;
     bool clientSidePrevBurning;
 
     #region Config
 
-    public virtual bool BurnsAllFuell {
-        get { return true; }
-    }
-    public virtual float HeatModifier {
-        get { return 1f; }
-    }
-    public virtual float BurnDurationModifier {
-        get { return 1f; }
-    }
+    public virtual bool BurnsAllFuell => true;
+    public virtual float HeatModifier => 1f;
+    public virtual float BurnDurationModifier => 1f;
 
-    public override string InventoryClassName {
-        get { return "stove"; }
-    }
+    public override string InventoryClassName => "stove";
 
-    public virtual string DialogTitle {
-        get { return Lang.Get("Stirling Engine"); }
-    }
+    public virtual string DialogTitle => Lang.Get("Stirling Engine");
 
-    public override InventoryBase Inventory {
-        get { return inventory; }
-    }
+    public override InventoryBase Inventory => inventory;
 
     #endregion
 
-
-    public BlockEntityStirlingEngineBurner() {
-        inventory = new InventoryStirlingEngineBurner(null, null);
-    }
 
     public virtual int enviromentTemperature()
     {
@@ -82,19 +76,16 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     public override void Initialize(ICoreAPI api)
     {
         base.Initialize(api);
-
-        inventory.pos = Pos;
+        // inventory.pos = Pos;  // old custom inventory; should be able to just use inventory[0] now.
         inventory.LateInitialize("smelting-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
-        
+
         RegisterGameTickListener(OnBurnTick, 100);
         RegisterGameTickListener(On500msTick, 500);
     }
 
     public bool IsSmoldering => canIgniteFuel;
 
-    public bool IsBurning {
-        get { return this.fuelBurnTime > 0; }
-    }
+    public bool IsBurning => this.fuelBurnTime > 0;
 
 
     public int getInventoryStackLimit() {
@@ -199,7 +190,7 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
 
     private bool canSmelt()
     {
-        CombustibleProperties fuelCopts = fuelCombustibleOpts;
+        CombustibleProperties? fuelCopts = fuelCombustibleOpts;
         if (fuelCopts == null) return false;
 
         return BurnsAllFuell
@@ -210,6 +201,8 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
 
     public void igniteFuel()
     {
+        if (fuelStack == null) return;
+
         igniteWithFuel(fuelStack);
 
         fuelStack.StackSize -= 1;
@@ -254,12 +247,15 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     {
         if (Api.Side == EnumAppSide.Client)
         {
-            toggleInventoryDialogClient(byPlayer, () => {
-                SyncedTreeAttribute dtree = new SyncedTreeAttribute();
-                SetDialogValues(dtree);
-                clientDialog = new GuiDialogBlockEntityStirlingEngineBurner(DialogTitle, Inventory, Pos, dtree, Api as ICoreClientAPI);
-                return clientDialog;
+            if (Api is ICoreClientAPI clientApi)
+            {
+                toggleInventoryDialogClient(byPlayer, () => {
+                    SyncedTreeAttribute dtree = new SyncedTreeAttribute();
+                    SetDialogValues(dtree);
+                    clientDialog = new GuiDialogBlockEntityStirlingEngineBurner(DialogTitle, Inventory, Pos, dtree, clientApi);
+                    return clientDialog;
                 });
+            }
         }
 
         return true;
@@ -290,11 +286,12 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
     {
         base.FromTreeAttributes(tree, worldForResolving);
-        Inventory.FromTreeAttributes(tree.GetTreeAttribute("inventory"));
+        // OLD: if (inventory == null) inventory = new InventoryStirlingEngineBurner("", worldForResolving.Api);
+        inventory.FromTreeAttributes(tree.GetTreeAttribute("inventory"));
 
         if (Api != null)
         {
-            Inventory.AfterBlocksLoaded(Api.World);
+            inventory.AfterBlocksLoaded(Api.World);
         }
 
 
@@ -362,35 +359,22 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
         }
     }
 
-    public override void OnBlockBroken(IPlayer byPlayer = null)
-    {
-        base.OnBlockBroken();
-    }
-
-
-
     #endregion
 
     #region Helper getters
 
 
-    public ItemSlot fuelSlot
-    {
-        get { return inventory[0]; }
-    }
+    public ItemSlot fuelSlot => inventory[0];
 
-    public ItemStack fuelStack
+    public ItemStack? fuelStack
     {
-        get { return inventory[0].Itemstack; }
+        get => inventory[0].Itemstack;
         set { inventory[0].Itemstack = value; inventory[0].MarkDirty(); }
     }
 
-    public CombustibleProperties fuelCombustibleOpts
-    {
-        get { return getCombustibleOpts(0); }
-    }
+    public CombustibleProperties? fuelCombustibleOpts => getCombustibleOpts(0);
 
-    public CombustibleProperties getCombustibleOpts(int slotid)
+    public CombustibleProperties? getCombustibleOpts(int slotid)
     {
         ItemSlot slot = inventory[slotid];
         if (slot.Itemstack == null) return null;

@@ -13,9 +13,9 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
 
     public bool IsExtinct;
 
-    private BlockFacing our_orientation;
+    private BlockFacing our_orientation = default;
 
-    WorldInteraction[] interactions;
+    WorldInteraction[] interactions = System.Array.Empty<WorldInteraction>();
 
     public override void OnLoaded(ICoreAPI api) {
         base.OnLoaded(api);
@@ -137,9 +137,10 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
         return base.OnBlockInteractStart(world, byPlayer, blockSel);
     }
 
-    public override void WasPlaced(IWorldAccessor world, BlockPos ownPos, BlockFacing connectedOnFacing)
+    public override void WasPlaced(IWorldAccessor world, BlockPos ownPos, BlockFacing? connectedOnFacing)
     {
         base.WasPlaced(world, ownPos, connectedOnFacing);
+        api.Logger.Log(EnumLogType.Notification, $"StirlingEngineBurner placed at {ownPos}");
         PlaceFakeBlock(world, ownPos);
     }
 
@@ -155,7 +156,7 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
         }
     }
 
-    public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
+    public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer? byPlayer, float dropQuantityMultiplier = 1)
     {
         Block upBlock = api.World.BlockAccessor.GetBlock(pos.UpCopy());
         if (upBlock.Code.BeginsWith("stirlingage", "stirlingenginerotor-"))
