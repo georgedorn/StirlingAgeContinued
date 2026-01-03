@@ -1,9 +1,9 @@
 {
-	"code": "engineparts-clay",
+	"code": "engineparts-metal",
 	"maxstacksize": 64,
 	"variantgroups": [
-		{ "code":"materialtype", "states": ["raw", "burned"] },
-		{ "code":"kind", "states": ["chamber", "workpiston", "displacerpiston"]}
+		{ "code":"kind", "states": ["chamber", "workpiston", "displacerpiston"]},
+		{ "code":"material", "states": ["copper", "brass", "tinbronze", "bismuthbronze", "blackbronze", "silver", "gold", "iron", "chromium", "electrum", "titanium", "molybdochalkos", "meteoriciron", "steel", "cupronickel", "nickel", "platinum", "stainlesssteel", "uranium", "zinc"]}
 	],
 	"behaviorsByType": {
 		"*-chamber": [
@@ -46,39 +46,12 @@
 			}}
 		]
 	},
-	"combustiblePropsByType": {
-		"engineparts-clay-raw-chamber": {
-			"meltingPoint": 650,
-			"meltingDuration": 45,
-			"smeltedRatio": 1,
-			"smeltingType": "fire",
-			"smeltedStack": { "type": "item", "code": "engineparts-clay-burned-chamber" },
-			"requiresContainer": false
-		},
-		"engineparts-clay-raw-workpiston": {
-			"meltingPoint": 650,
-			"meltingDuration": 45,
-			"smeltedRatio": 1,
-			"smeltingType": "fire",
-			"smeltedStack": { "type": "item", "code": "engineparts-clay-burned-workpiston" },
-			"requiresContainer": false
-		},
-		"engineparts-clay-raw-displacerpiston": {
-			"meltingPoint": 650,
-			"meltingDuration": 45,
-			"smeltedRatio": 1,
-			"smeltingType": "fire",
-			"smeltedStack": { "type": "item", "code": "engineparts-clay-burned-displacerpiston" },
-			"requiresContainer": false
-		}
-	},
 	"materialDensity": 2600,
 	"creativeinventory": { "general": ["*"], "construction": ["*"] },
 	"texturesByType": {
-		"*-raw-chamber": {  "all": { "base": "game:block/clay/fireclay" } },
-		"*-burned-chamber": {  "all": { "base": "game:block/clay/hardened/fire1" } },
-		"*-raw-*": {  "all": { "base": "game:block/clay/blueclay" } },
-		"*-burned-*": {  "all": { "base": "game:block/clay/ceramic" } }
+		"engineparts-metal-chamber-*": {  "all": { "base": "game:block/metal/block/{material}" } },
+		"engineparts-metal-workpiston-*": {  "all": { "base": "game:block/metal/block/{material}" } },
+		"engineparts-metal-displacerpiston-*": {  "all": { "base": "game:block/metal/block/{material}" } }
 	},
 	"shape": { "base": "stirlingage:engineparts-{kind}" },
 	"heldTpIdleAnimation": "holdbothhands",

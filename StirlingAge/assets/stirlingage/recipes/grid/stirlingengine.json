@@ -1,18 +1,35 @@
 [
 	{
-		"ingredientPattern": "HAR,WPD,FC_",
+		"ingredientPattern": "HWA,PDP,FCR",
 		"ingredients": {
 			"H": { "type": "item", "code": "game:hammer-*", "isTool": true, "toolDurabilityCost": 50 },
 			"A": { "type": "block", "code": "game:woodenaxle-*" },
-			"C": { "type": "item", "code": "engineparts-burned-chamber" },
-			"W": { "type": "item", "code": "engineparts-burned-workpiston" },
-			"D": { "type": "item", "code": "engineparts-burned-displacerpiston" },
+			"C": { "type": "item", "code": "engineparts-clay-burned-chamber" },
+			"W": { "type": "item", "code": "engineparts-clay-burned-workpiston" },
+			"D": { "type": "item", "code": "engineparts-clay-burned-displacerpiston" },
 			"R": { "type": "item", "code": "game:resin" },
 			"F": { "type": "item", "code": "game:fat" },
 			"P": { "type": "item", "code": "game:metalplate-copper" }
 		},
 		"width": 3,
 		"height": 3,
-		"output": { "type": "block", "code": "stirlingengineburner-cold-north", "quantity": 1 }
+		"output": { "type": "block", "code": "stirlingengineburner-cold-north-clay", "quantity": 1 }
+	},
+	{
+		"ingredientPattern": "HWA,PDP,FCR",
+		"ingredients": {
+			"H": { "type": "item", "code": "game:hammer-*", "isTool": true, "toolDurabilityCost": 50 },
+			"A": { "type": "block", "code": "game:woodenaxle-*" },
+			"C": { "type": "item", "code": "engineparts-metal-chamber-{metal}" },
+			"W": { "type": "item", "code": "engineparts-metal-workpiston-{metal}" },
+			"D": { "type": "item", "code": "engineparts-metal-displacerpiston-{metal}" },
+			"R": { "type": "item", "code": "game:resin" },
+			"F": { "type": "item", "code": "game:fat" },
+			"P": { "type": "item", "code": "game:metalplate-copper" }
+		},
+		"width": 3,
+		"height": 3,
+		"output": { "type": "block", "code": "stirlingengineburner-cold-north-{metal}", "quantity": 1 },
+		"allowedVariants": { "metal": ["copper", "brass", "tinbronze", "bismuthbronze", "blackbronze", "silver", "gold", "iron", "chromium", "electrum", "titanium", "molybdochalkos", "meteoriciron", "steel", "cupronickel", "nickel", "platinum", "stainlesssteel", "uranium", "zinc"] }
 	}
 ]

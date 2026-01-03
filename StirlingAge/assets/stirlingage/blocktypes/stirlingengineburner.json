@@ -1,7 +1,9 @@
 {
 	"code": "stirlingengineburner",
-	"class": "StirlingEngineBurner",
-	"entityClass": "StirlingEngineBurner",
+	"classByType": {
+		"*": "BlockStirlingEngineBurner"
+	},
+	"entityClass": "BlockEntityStirlingEngineBurner",
 	"behaviors": [
 		{"name": "HorizontalOrientable"},
 		{"name": "Container"},
@@ -10,7 +12,8 @@
 	],
 	"variantgroups": [
 		{ "code":"burnstate", "states": ["extinct", "lit", "cold"] },
-		{ "code":"side", "loadFromProperties": "abstract/horizontalorientation" }
+		{ "code":"side", "loadFromProperties": "abstract/horizontalorientation" },
+		{ "code":"material", "states": ["clay", "copper", "brass", "tinbronze", "bismuthbronze", "blackbronze", "silver", "gold", "iron", "chromium", "electrum", "titanium", "molybdochalkos", "meteoriciron", "steel", "cupronickel", "nickel", "platinum", "stainlesssteel", "uranium", "zinc"]}
 	],
 	"creativeinventory": { "general": ["*-cold-north"], "mechanics": ["*-cold-north"] },
 	"__commented_shapebytype": {

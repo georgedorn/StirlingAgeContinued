@@ -41,8 +41,50 @@ public class BEBehaviorStirlingEngineRotor : BEBehaviorMPRotor {
                 return;
             }
         }
+
+        // Get material-specific power multiplier
+        float materialMultiplier = GetMaterialPowerMultiplier();
+
+        // Log material, temperatures, and power calculations
+        our_entity.Api.Logger.Debug($"Stirling Engine: Material={burner.Material}, HotTemp={burner.HotSideTemperature}°C, ColdTemp={burner.ColdSideTemperature}°C, MaterialMultiplier={materialMultiplier}x");
+
         // float world_temperature = api.World.BlockAccessor.GetClimateAt(entity.Pos.AsBlockPos, EnumGetClimateMode.ForSuppliedDate_TemperatureOnly, api.World.Calendar.TotalDays).Temperature;
-        target_torque = (burner.HotSideTemperature - burner.ColdSideTemperature) * ΤORQUE_AT_BASIS_TEMP / BASIS_TEMP;
+        target_torque = (burner.HotSideTemperature - burner.ColdSideTemperature) * ΤORQUE_AT_BASIS_TEMP / BASIS_TEMP * materialMultiplier;
+
+        // Log the calculated power output
+        our_entity.Api.Logger.Debug($"Stirling Engine: Calculated torque={target_torque}, Max possible torque={(burner.HotSideTemperature - burner.ColdSideTemperature) * ΤORQUE_AT_BASIS_TEMP / BASIS_TEMP}");
+    }
+
+    private float GetMaterialPowerMultiplier() {
+        // Get material from the burner interface
+        string material = burner.Material;
+        if (string.IsNullOrEmpty(material)) return 1.0f; // Default to clay
+
+        // Engine parts material-specific power multipliers - NOT the hot/cold plates
+        // Higher is better?  TODO: Explain this better.
+        switch (material) {
+            case "copper": return 1.2f;
+            case "brass": return 1.1f;
+            case "tinbronze": return 1.3f;
+            case "bismuthbronze": return 1.25f;
+            case "blackbronze": return 1.4f;
+            case "silver": return 1.8f;
+            case "gold": return 2.0f;
+            case "iron": return 1.5f;
+            case "chromium": return 1.6f;
+            case "electrum": return 1.7f;
+            case "titanium": return 1.9f;
+            case "molybdochalkos": return 1.8f;
+            case "meteoriciron": return 1.7f;
+            case "steel": return 1.6f;
+            case "cupronickel": return 1.4f;
+            case "nickel": return 1.5f;
+            case "platinum": return 2.2f;
+            case "stainlesssteel": return 1.7f;
+            case "uranium": return 2.5f;
+            case "zinc": return 1.1f;
+            default: return 1.0f; // clay
+        }
     }
 
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb) {

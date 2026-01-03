@@ -82,7 +82,6 @@ public sealed class BuildTask : FrostingTask<BuildContext>
                 Configuration = context.BuildConfiguration
             });
 
-
         context.DotNetPublish($"../{BuildContext.ProjectName}/{BuildContext.ProjectName}.csproj",
             new DotNetPublishSettings
             {

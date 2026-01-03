@@ -44,8 +44,9 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
 
     public double extinguishedTotalHours;
 
-    public float HotSideTemperature => furnaceTemperature;
-    public float ColdSideTemperature => enviromentTemperature();
+        public float HotSideTemperature => furnaceTemperature;
+        public float ColdSideTemperature => enviromentTemperature();  // TODO:  Check for a metal water reservoir next to the cold plate.
+        public string Material => Block.Variant["material"];
 
     GuiDialogBlockEntityStirlingEngineBurner? clientDialog;
     bool clientSidePrevBurning;
@@ -231,7 +232,7 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
 
     public void setBlockState(string state)
     {
-        AssetLocation loc = Block.CodeWithVariants(new string[]{"burnstate", "side"}, new string[]{state, Block.Variant["side"]});
+        AssetLocation loc = Block.CodeWithVariants(new string[]{"burnstate", "side", "material"}, new string[]{state, Block.Variant["side"], Block.Variant["material"]});
         Block block = Api.World.GetBlock(loc);
         if (block == null) {
             return;

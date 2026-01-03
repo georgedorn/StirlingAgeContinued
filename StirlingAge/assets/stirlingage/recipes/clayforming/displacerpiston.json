@@ -158,5 +158,5 @@
 		]
 	],
 	"name": "displacerpiston",
-	"output": { "type": "item", "code": "engineparts-raw-displacerpiston" }
+	"output": { "type": "item", "code": "engineparts-clay-raw-displacerpiston" }
 }

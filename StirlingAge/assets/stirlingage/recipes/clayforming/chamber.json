@@ -264,5 +264,5 @@
 		]
 	],
 	"name": "chamber",
-	"output": { "type": "item", "code": "engineparts-raw-chamber" }
+	"output": { "type": "item", "code": "engineparts-clay-raw-chamber" }
 }

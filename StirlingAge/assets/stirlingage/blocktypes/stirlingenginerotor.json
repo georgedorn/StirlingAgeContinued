@@ -1,10 +1,12 @@
 {
     "__comment": "A generic rotor that can be applied to any stirling engine heat source.",
 	"code": "stirlingenginerotor",
-	"class": "StirlingEngineRotor",
+	"classByType": {
+		"*": "StirlingEngineRotor"
+	},
 	"entityClass": "Generic",
 	"entityBehaviors": [
-		{"name": "StirlingEngineRotor"}
+		{"name": "BEBehaviorStirlingEngineRotor"}
 	],
 	"behaviors": [
 		{"name": "HorizontalOrientable"}

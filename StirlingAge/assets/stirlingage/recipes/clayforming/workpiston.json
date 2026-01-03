@@ -104,5 +104,5 @@
 		]
 	],
 	"name": "workpiston",
-	"output": { "type": "item", "code": "engineparts-raw-workpiston" }
+	"output": { "type": "item", "code": "engineparts-clay-raw-workpiston" }
 }
