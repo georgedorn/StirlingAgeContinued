@@ -28,9 +28,6 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable, IWrenchOrienta
         validSides.Add("east");
         validSides.Add("west");
 
-        // Debug logging to trace block loading
-        api.Logger.Notification($"BlockStirlingEngineBurner loading with variant side: {Variant["side"]}");
-
         if (!validSides.Contains(Variant["side"])){
             api.Logger.Log(EnumLogType.Error, "Tried to load a Burner block with a 'side' of " + Variant["side"]);
             return;
@@ -248,9 +245,9 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable, IWrenchOrienta
         
     }
 
-    public override bool HasMechPowerConnectorAt(IWorldAccessor world, BlockPos pos, BlockFacing face) {
-        return false;
-    }
+        public override bool HasMechPowerConnectorAt(IWorldAccessor world, BlockPos pos, BlockFacing face) {
+            return false;
+        }
 
     public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir) {
         // TODO: Implement proper rotation logic later

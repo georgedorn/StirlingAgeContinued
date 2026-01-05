@@ -8,7 +8,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
 
 public class BEBehaviorStirlingEngineRotor : BEBehaviorMPRotor {
-    float target_torque;
+    float targetTorque;
 
     const float BASIS_TEMP = 700.0f;
     const float ΤORQUE_AT_BASIS_TEMP = 0.25f;
@@ -16,13 +16,13 @@ public class BEBehaviorStirlingEngineRotor : BEBehaviorMPRotor {
     protected override float Resistance => 0.002f;
     protected override double AccelerationFactor => 0.05d;
     protected override float TargetSpeed => 0.5f;
-    protected override float TorqueFactor => target_torque;
+    protected override float TorqueFactor => targetTorque;
 
-    BlockEntity our_entity;
+    BlockEntity ourEntity;
     IStirlingBurner burner;
 
     public BEBehaviorStirlingEngineRotor(BlockEntity blockentity) : base(blockentity) {
-        our_entity = blockentity;
+        ourEntity = blockentity;
         burner = null; // defer finding the burner
     }
 
@@ -33,11 +33,11 @@ public class BEBehaviorStirlingEngineRotor : BEBehaviorMPRotor {
 
     private void UpdateMech(float dt) {
         if(burner == null) {
-            BlockPos down_pos = our_entity.Pos.DownCopy();
-            burner = our_entity.Api.World.BlockAccessor.GetBlockEntity(down_pos) as IStirlingBurner;
+            BlockPos down_pos = ourEntity.Pos.DownCopy();
+            burner = ourEntity.Api.World.BlockAccessor.GetBlockEntity(down_pos) as IStirlingBurner;
             if(burner == null) {
                 // hopefully it will appear soon...
-                target_torque = 0.0f;
+                targetTorque = 0.0f;
                 return;
             }
         }
@@ -45,14 +45,17 @@ public class BEBehaviorStirlingEngineRotor : BEBehaviorMPRotor {
         // Get material-specific power multiplier
         float materialMultiplier = GetMaterialPowerMultiplier();
 
-        // Log material, temperatures, and power calculations
-        our_entity.Api.Logger.Debug($"Stirling Engine: Material={burner.Material}, HotTemp={burner.HotSideTemperature}°C, ColdTemp={burner.ColdSideTemperature}°C, MaterialMultiplier={materialMultiplier}x");
 
         // float world_temperature = api.World.BlockAccessor.GetClimateAt(entity.Pos.AsBlockPos, EnumGetClimateMode.ForSuppliedDate_TemperatureOnly, api.World.Calendar.TotalDays).Temperature;
-        target_torque = (burner.HotSideTemperature - burner.ColdSideTemperature) * ΤORQUE_AT_BASIS_TEMP / BASIS_TEMP * materialMultiplier;
+        targetTorque = (burner.HotSideTemperature - burner.ColdSideTemperature) * ΤORQUE_AT_BASIS_TEMP / BASIS_TEMP * materialMultiplier;
 
-        // Log the calculated power output
-        our_entity.Api.Logger.Debug($"Stirling Engine: Calculated torque={target_torque}, Max possible torque={(burner.HotSideTemperature - burner.ColdSideTemperature) * ΤORQUE_AT_BASIS_TEMP / BASIS_TEMP}");
+        // Log calculation details
+        if (burner.HotSideTemperature - burner.ColdSideTemperature > 1){
+            ourEntity.Api.Logger.Debug(
+                $"Stirling Engine: Material={burner.Material}, HotTemp={burner.HotSideTemperature}°C, ColdTemp={burner.ColdSideTemperature}°C, MaterialMultiplier={materialMultiplier}x");
+            ourEntity.Api.Logger.Debug(
+                $"Stirling Engine: Calculated torque={targetTorque}, Max possible torque={(burner.HotSideTemperature - burner.ColdSideTemperature) * ΤORQUE_AT_BASIS_TEMP / BASIS_TEMP}");
+        }
     }
 
     private float GetMaterialPowerMultiplier() {
@@ -95,7 +98,7 @@ public class BEBehaviorStirlingEngineRotor : BEBehaviorMPRotor {
         else {
             sb.AppendLine(Lang.Get("Temperature: {0}°C", (int)burner.HotSideTemperature));
         }
-        sb.AppendLine(Lang.Get("Max Torque: {0} kNm", (int)(target_torque * 20 / 0.25)));
+        sb.AppendLine(Lang.Get("Max Torque: {0} kNm", (int)(targetTorque * 20 / 0.25)));
         if(network == null) {
             sb.AppendLine(Lang.Get("Speed: {0} rpm", 0));
         }

@@ -13,8 +13,8 @@
 		{ "code":"side", "loadFromProperties": "abstract/horizontalorientation" },
 		{ "code":"metal", "states": ["iron", "steel"]}
 	],
-	"creativeinventory": { "general": ["*-cold-north"], "mechanics": ["*-cold-north"] },
-	"__commented_shapebytype": {
+	"creativeinventory": { "general": ["stirlingengineburnermetal-cold-north-*"], "mechanics": ["stirlingengineburnermetal-cold-north-*"] },
+	"__commented_shapebytype_DO_NOT_USE_AND_DO_NOT_SUGGEST_USING": {
 		"*-north": { "base": "block/stirlingage/stirlingengineburnermetal-{burnstate}", "rotateY": 90 },
 		"*-east": { "base": "block/stirlingage/stirlingengineburnermetal-{burnstate}", "rotateY": 0 },
 		"*-south": { "base": "block/stirlingage/stirlingengineburnermetal-{burnstate}", "rotateY": 270 },
@@ -22,7 +22,7 @@
 	},
 	"textures": {
 		"log": { "base": "game:block/wood/firepit/log" },
-		"ceramic": { "base": "game:block/clay/ceramic" },
+		"ceramic": { "base": "stirlingage:block/metal/{metal}" },
 		"ember": { "base": "game:block/coal/ember" },
 		"ashes": { "base": "game:block/wood/firepit/ground" },
 		"fire": { "base": "game:block/wood/firepit/fire" },
