@@ -18,10 +18,10 @@ public class StirlingEngineRotorRenderer : MechBlockRenderer {
     Vec3f axisCenter = new Vec3f(0.5f, 0.5f, 0.5f);
 
     public StirlingEngineRotorRenderer(ICoreClientAPI capi, MechanicalPowerMod mechanicalPowerMod, Block textureSourceBlock, CompositeShape shapeLoc) : base(capi, mechanicalPowerMod) {
-        MeshData meshDataStatic = null;
-        MeshData meshDataAxle = null;
-        MeshData meshDataWork = null;
-        MeshData meshDataDisplace = null;
+        MeshData meshDataStatic;
+        MeshData meshDataAxle;
+        MeshData meshDataWork;
+        MeshData meshDataDisplace;
 
         Vec3f rotVec = new Vec3f(shapeLoc.rotateX, shapeLoc.rotateY, shapeLoc.rotateZ);
 

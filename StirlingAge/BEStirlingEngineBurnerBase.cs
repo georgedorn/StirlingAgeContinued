@@ -11,18 +11,14 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
-public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHeatSource, IFirePit, IStirlingBurner {
-    //internal InventoryStirlingEngineBurner inventory;  // Custom subclass, avoid if possible
-
+public abstract class BlockEntityStirlingEngineBurnerBase : BlockEntityOpenableContainer, IHeatSource, IFirePit, IStirlingBurner {
     internal InventoryGeneric inventory;
 
-    public BlockEntityStirlingEngineBurner()
+    public BlockEntityStirlingEngineBurnerBase()
     {
-        // The old, maybe hacky way we did this:
-        //inventory = new InventoryStirlingEngineBurner("", null);
-
         inventory = new InventoryGeneric(1, "stirlingburner-0", null, null);
     }
+
     // Temperature before the half second tick
     public float prevFurnaceTemperature = 20;
     // Current temperature of the furnace
@@ -46,7 +42,8 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
 
         public float HotSideTemperature => furnaceTemperature;
         public float ColdSideTemperature => enviromentTemperature();  // TODO:  Check for a metal water reservoir next to the cold plate.
-        public string Material => Block.Variant["material"];
+
+    public abstract string Material { get; }
 
     GuiDialogBlockEntityStirlingEngineBurner? clientDialog;
     bool clientSidePrevBurning;
@@ -77,7 +74,6 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     public override void Initialize(ICoreAPI api)
     {
         base.Initialize(api);
-        // inventory.pos = Pos;  // old custom inventory; should be able to just use inventory[0] now.
         inventory.LateInitialize("smelting-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
 
         RegisterGameTickListener(OnBurnTick, 100);
@@ -89,7 +85,7 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     public bool IsBurning => this.fuelBurnTime > 0;
 
 
-    public int getInventoryStackLimit() {
+    public virtual int getInventoryStackLimit() {
         return 64;
     }
 
@@ -154,8 +150,6 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
 
         return secondsIgniting > 3 ? EnumIgniteState.IgniteNow : EnumIgniteState.Ignitable;
     }
-
-
 
 
     public float changeTemperature(float fromTemp, float toTemp, float dt)
@@ -228,19 +222,7 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     }
 
 
-
-
-    public void setBlockState(string state)
-    {
-        AssetLocation loc = Block.CodeWithVariants(new string[]{"burnstate", "side", "material"}, new string[]{state, Block.Variant["side"], Block.Variant["material"]});
-        Block block = Api.World.GetBlock(loc);
-        if (block == null) {
-            return;
-        }
-
-        Api.World.BlockAccessor.ExchangeBlock(block.Id, Pos);
-        this.Block = block;
-    }
+    protected abstract void setBlockState(string state);
 
     #region Events
 
@@ -287,7 +269,6 @@ public class BlockEntityStirlingEngineBurner : BlockEntityOpenableContainer, IHe
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
     {
         base.FromTreeAttributes(tree, worldForResolving);
-        // OLD: if (inventory == null) inventory = new InventoryStirlingEngineBurner("", worldForResolving.Api);
         inventory.FromTreeAttributes(tree.GetTreeAttribute("inventory"));
 
         if (Api != null)
