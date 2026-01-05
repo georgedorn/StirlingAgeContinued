@@ -6,7 +6,7 @@
 		{ "code":"kind", "states": ["chamber", "workpiston", "displacerpiston"]}
 	],
 	"behaviorsByType": {
-		"*-chamber": [
+		"engineparts-clay-*-chamber": [
 			{ "name": "GroundStorable", "properties": {
 				"layout": "SingleCenter",
 				"collisionbox": {
@@ -19,7 +19,7 @@
 				}
 			}}
 		],
-		"*-displacerpiston": [
+		"engineparts-clay-*-displacerpiston": [
 			{ "name": "GroundStorable", "properties": {
 				"layout": "SingleCenter",
 				"collisionbox": {
@@ -32,7 +32,7 @@
 				}
 			}}
 		],
-		"*-workpiston": [
+		"engineparts-clay-*-workpiston": [
 			{ "name": "GroundStorable", "properties": {
 				"layout": "SingleCenter",
 				"collisionbox": {

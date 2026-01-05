@@ -1,9 +1,7 @@
 {
-	"code": "stirlingengineburner",
-	"classByType": {
-		"*": "BlockStirlingEngineBurner"
-	},
-	"entityClass": "BlockEntityStirlingEngineBurner",
+	"code": "stirlingengineburnerclay",
+	"class": "BlockStirlingEngineBurner",
+	"entityClass": "BlockEntityStirlingEngineBurnerClay",
 	"behaviors": [
 		{"name": "HorizontalOrientable"},
 		{"name": "Container"},
@@ -12,15 +10,15 @@
 	],
 	"variantgroups": [
 		{ "code":"burnstate", "states": ["extinct", "lit", "cold"] },
-		{ "code":"side", "loadFromProperties": "abstract/horizontalorientation" },
-		{ "code":"material", "states": ["clay", "copper", "brass", "tinbronze", "bismuthbronze", "blackbronze", "silver", "gold", "iron", "chromium", "electrum", "titanium", "molybdochalkos", "meteoriciron", "steel", "cupronickel", "nickel", "platinum", "stainlesssteel", "uranium", "zinc"]}
+		{ "code":"side", "loadFromProperties": "abstract/horizontalorientation" }
+		
 	],
 	"creativeinventory": { "general": ["*-cold-north"], "mechanics": ["*-cold-north"] },
 	"__commented_shapebytype": {
-		"*-north": { "base": "block/stirlingage/stirlingengineburner-{burnstate}", "rotateY": 90 },
-		"*-east": { "base": "block/stirlingage/stirlingengineburner-{burnstate}", "rotateY": 0 },
-		"*-south": { "base": "block/stirlingage/stirlingengineburner-{burnstate}", "rotateY": 270 },
-		"*-west": { "base": "block/stirlingage/stirlingengineburner-{burnstate}", "rotateY": 180 }
+		"*-north": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 90 },
+		"*-east": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 0 },
+		"*-south": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 270 },
+		"*-west": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 180 }
 	},
 	"textures": {
 		"log": { "base": "game:block/wood/firepit/log" },
@@ -33,17 +31,17 @@
 	"shape": { "base": "game:block/wood/firepit/{burnstate}-normal" },
 	"shapeinventory": { "base": "stirlingengine-whole" },
 	"lightHsvByType": {
-		"stirlingengineburner-extinct-north": [7, 7, 3],
-		"stirlingengineburner-extinct-east": [7, 7, 3],
-		"stirlingengineburner-extinct-south": [7, 7, 3],
-		"stirlingengineburner-extinct-west": [7, 7, 3],
-		"stirlingengineburner-lit-north": [7, 7, 16],
-		"stirlingengineburner-lit-east": [7, 7, 16],
-		"stirlingengineburner-lit-south": [7, 7, 16],
-		"stirlingengineburner-lit-west": [7, 7, 16]
+		"stirlingengineburnerclay-extinct-north": [7, 7, 3],
+		"stirlingengineburnerclay-extinct-east": [7, 7, 3],
+		"stirlingengineburnerclay-extinct-south": [7, 7, 3],
+		"stirlingengineburnerclay-extinct-west": [7, 7, 3],
+		"stirlingengineburnerclay-lit-north": [7, 7, 16],
+		"stirlingengineburnerclay-lit-east": [7, 7, 16],
+		"stirlingengineburnerclay-lit-south": [7, 7, 16],
+		"stirlingengineburnerclay-lit-west": [7, 7, 16]
 	},
 	"particlePropertiesByType": {
-		"stirlingengineburner-extinct-*": [
+		"stirlingengineburnerclay-extinct-*": [
 			{
 				"hsvaColor": [{ "avg": 0, "var": 0 }, { "avg": 0, "var": 0 }, { "avg": 70, "var": 30 },  { "avg": 220, "var": 50 }],
 				"opacityEvolve": { "transform": "quadratic", "factor": -16 },
@@ -57,7 +55,7 @@
 				"windAffectednes": 0.7
 			}
 		],
-		"stirlingengineburner-lit-*": [
+		"stirlingengineburnerclay-lit-*": [
 			{
 				"__comment": "Ember cubicles",
 				"hsvaColor": [{ "avg": 30, "var": 20 }, { "avg": 255, "var": 50 }, { "avg": 255, "var": 50 },  { "avg": 255, "var": 0 }],
@@ -111,7 +109,7 @@
 		"all": false
 	},
 	"drops": [
-		{ "type": "block", "code": "stirlingage:stirlingengineburner-cold-north", "quantity": { "avg": 1 } }
+		{ "type": "block", "code": "stirlingage:stirlingengineburnerclay-cold-north", "quantity": { "avg": 1 } }
 	],
 	"resistance": 3,
 	"lightAbsorption": 0,

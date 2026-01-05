@@ -3,7 +3,7 @@
         "type": "item",
         "code": "game:ingot-*",
         "name": "metal",
-        "allowedVariants": [ "copper", "brass", "tinbronze", "bismuthbronze", "blackbronze", "silver", "gold", "iron", "chromium", "electrum", "titanium", "molybdochalkos", "meteoriciron", "steel", "cupronickel", "nickel", "platinum", "stainlesssteel", "uranium", "zinc" ]
+        "allowedVariants": ["iron", "steel"]
     },
     "name": "displacerpiston",
     "pattern": [
@@ -106,6 +106,6 @@
     ],
     "output": {
         "type": "item",
-        "code": "engineparts-metal-displacerpiston-{metal}"
+        "code": "engineparts-metal-{metal}-displacerpiston"
     }
 }

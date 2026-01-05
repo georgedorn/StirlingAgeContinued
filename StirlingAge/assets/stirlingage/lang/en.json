@@ -1,24 +1,21 @@
 {
-    "stirlingage:block-stirlingengineburner-*": "Stirling engine",
-    "stirlingage:block-stirlingenginesucker-*": "Stirling engine (geothermal)",
+    "stirlingage:block-stirlingengineburnerclay-*": "Stirling engine burner (clay)",
+    "stirlingage:block-stirlingengineburnermetal-*": "Stirling engine burner (metal)",
     "stirlingage:block-stirlingenginerotor-*": "Stirling engine",
-<<<<<<< HEAD
-    "stirlingage:item-engineparts-raw-chamber": "Raw stirling engine fluid chamber",
-    "stirlingage:item-engineparts-burned-chamber": "Stirling engine fluid chamber",
-    "stirlingage:item-engineparts-raw-workpiston": "Raw stirling engine working piston",
-    "stirlingage:item-engineparts-burned-workpiston": "Stirling engine working piston",
-    "stirlingage:item-engineparts-raw-displacerpiston": "Raw stirling engine displacer piston",
-    "stirlingage:item-engineparts-burned-displacerpiston": "Stirling engine displacer piston"
-}
-=======
     "stirlingage:item-engineparts-clay-raw-chamber": "Raw clay stirling engine fluid chamber",
     "stirlingage:item-engineparts-clay-burned-chamber": "Clay stirling engine fluid chamber",
     "stirlingage:item-engineparts-clay-raw-workpiston": "Raw clay stirling engine working piston",
     "stirlingage:item-engineparts-clay-burned-workpiston": "Clay stirling engine working piston",
     "stirlingage:item-engineparts-clay-raw-displacerpiston": "Raw clay stirling engine displacer piston",
     "stirlingage:item-engineparts-clay-burned-displacerpiston": "Clay stirling engine displacer piston",
-    "stirlingage:item-engineparts-metal-chamber-{metal}": "{metal} stirling engine fluid chamber",
-    "stirlingage:item-engineparts-metal-workpiston-{metal}": "{metal} stirling engine working piston",
-    "stirlingage:item-engineparts-metal-displacerpiston-{metal}": "{metal} stirling engine displacer piston"
+    "stirlingage:item-engineparts-metal-{metal}-chamber": "{metal} stirling engine fluid chamber",
+    "stirlingage:item-engineparts-metal-{metal}-workpiston": "{metal} stirling engine working piston",
+    "stirlingage:item-engineparts-metal-{metal}-displacerpiston": "{metal} stirling engine displacer piston",
+    "stirlingage:item-engineparts-metal-iron-chamber": "Iron stirling engine fluid chamber",
+    "stirlingage:item-engineparts-metal-steel-chamber": "Steel stirling engine fluid chamber",
+    "stirlingage:item-engineparts-metal-iron-workpiston": "Iron stirling engine working piston",
+    "stirlingage:item-engineparts-metal-steel-workpiston": "Steel stirling engine working piston",
+    "stirlingage:item-engineparts-metal-iron-displacerpiston": "Iron stirling engine displacer piston",
+    "stirlingage:item-engineparts-metal-steel-displacerpiston": "Steel stirling engine displacer piston",
+    "stirlingage:block-stirlingengineburnermetal-{metal}-{burnstate}-{side}": "{metal} stirling engine burner ({burnstate})"
 }
->>>>>>> 220da42 (Checkpoint after trying and failing to implement forged components)

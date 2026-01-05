@@ -1,6 +1,7 @@
 /* Based on BlockCreativeRotor.cs and BlockFirepit.cs and BlockPulverizer.cs
    from vssurvivalmod */
 
+using System;
 using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -9,7 +10,7 @@ using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 
-public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
+public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable, IWrenchOrientable {
 
     public bool IsExtinct;
 
@@ -19,6 +20,17 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
 
     public override void OnLoaded(ICoreAPI api) {
         base.OnLoaded(api);
+        List<String> validSides = new List<String>();
+        validSides.Add("north");
+        validSides.Add("south");
+        validSides.Add("east");
+        validSides.Add("west");
+
+
+        if (!validSides.Contains(Variant["side"])){
+            api.Logger.Log(EnumLogType.Error, "Tried to load a Burner block with a 'side' of " + Variant["side"]);
+            return;
+        }
         our_orientation = BlockFacing.FromFirstLetter(Variant["side"][0]);
         interactions = ObjectCacheUtil.GetOrCreate(api, "stirlingEngineInteractions", () => {
             List<ItemStack> canIgniteStacks = BlockBehaviorCanIgnite.CanIgniteStacks(api, true);
@@ -56,6 +68,9 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
         return facing == our_orientation;
     }
 
+
+/*
+    // This entire function is GARBAGE.  Do not use it here, the base class cannot tell what variants to use.
     public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemstack, BlockSelection blockSel, ref string failureCode) {
         if (!CanPlaceBlock(world, byPlayer, blockSel, ref failureCode)) {
             return false;
@@ -72,12 +87,15 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
             }
         }
 
+        api.Logger.Log(EnumLogType.Notification, $"StirlingEngineBurner TryPlaceBlock: requested facing {horVer[0]}, current facing {our_orientation}");
+
         bool ok = base.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
         if (ok) {
             WasPlaced(world, blockSel.Position, null);
         }
         return ok;
     }
+    */
 
     EnumIgniteState IIgnitable.OnTryIgniteStack(EntityAgent byEntity, BlockPos pos, ItemSlot slot, float secondsIgniting)
     {
@@ -184,5 +202,9 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
 
     public override bool HasMechPowerConnectorAt(IWorldAccessor world, BlockPos pos, BlockFacing face) {
         return false;
+    }
+
+    public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir) {
+        // TODO: Implement proper rotation logic later
     }
 }

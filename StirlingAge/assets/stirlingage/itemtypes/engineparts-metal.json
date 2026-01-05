@@ -2,8 +2,8 @@
 	"code": "engineparts-metal",
 	"maxstacksize": 64,
 	"variantgroups": [
-		{ "code":"kind", "states": ["chamber", "workpiston", "displacerpiston"]},
-		{ "code":"material", "states": ["copper", "brass", "tinbronze", "bismuthbronze", "blackbronze", "silver", "gold", "iron", "chromium", "electrum", "titanium", "molybdochalkos", "meteoriciron", "steel", "cupronickel", "nickel", "platinum", "stainlesssteel", "uranium", "zinc"]}
+		{ "code":"metal", "states": ["iron", "steel"]},
+		{ "code":"kind", "states": ["chamber", "workpiston", "displacerpiston"]}
 	],
 	"behaviorsByType": {
 		"*-chamber": [
@@ -49,9 +49,9 @@
 	"materialDensity": 2600,
 	"creativeinventory": { "general": ["*"], "construction": ["*"] },
 	"texturesByType": {
-		"engineparts-metal-chamber-*": {  "all": { "base": "game:block/metal/block/{material}" } },
-		"engineparts-metal-workpiston-*": {  "all": { "base": "game:block/metal/block/{material}" } },
-		"engineparts-metal-displacerpiston-*": {  "all": { "base": "game:block/metal/block/{material}" } }
+		"engineparts-metal-*-chamber": {  "all": { "base": "stirlingage:block/metal/{metal}" } },
+		"engineparts-metal-*-workpiston": {  "all": { "base": "stirlingage:block/metal/{metal}" } },
+		"engineparts-metal-*-displacerpiston": {  "all": { "base": "stirlingage:block/metal/{metal}" } }
 	},
 	"shape": { "base": "stirlingage:engineparts-{kind}" },
 	"heldTpIdleAnimation": "holdbothhands",
