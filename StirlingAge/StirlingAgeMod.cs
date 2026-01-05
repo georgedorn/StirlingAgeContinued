@@ -6,6 +6,7 @@ using Vintagestory.GameContent.Mechanics;
 public class StirlingAgeContinuedMod : ModSystem {
     public override void Start(ICoreAPI api) {
         base.Start(api);
+        api.Logger.Notification("StirlingAge mod starting up");
 
         // Note: renaming object classes to match the C# classes.  This is entirely allowed and is NEVER the source of
         // "no such class registered" errors.  These are far more likely the result of stirlingage.dll not being loaded AT ALL.
