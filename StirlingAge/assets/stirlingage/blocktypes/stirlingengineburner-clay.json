@@ -14,14 +14,15 @@
 		
 	],
 	"creativeinventory": { "general": ["*-cold-north"], "mechanics": ["*-cold-north"] },
-	"__commented_shapebytype": {
-		"*-north": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 90 },
-		"*-east": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 0 },
-		"*-south": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 270 },
-		"*-west": { "base": "block/stirlingage/stirlingengineburnerclay-{burnstate}", "rotateY": 180 }
-	},
 	"textures": {
 		"log": { "base": "game:block/wood/firepit/log" },
+		"leg": { "base": "game:block/clay/ceramic" },
+        "chamber": {"base": "game:block/clay/flowerpot/sides/amber.png"},
+		"piston": { "base": "game:block/clay/ceramic" },
+		"bearing": { "base": "game:block/clay/ceramic" },
+		"worksleeve": { "base": "game:block/clay/ceramicBROKENONPURPOSE" },
+		"metal": { "base": "game:block/clay/ceramic" },
+		"wood": { "base": "game:block/wood/planks/generic" },
 		"ceramic": { "base": "game:block/clay/ceramic" },
 		"ember": { "base": "game:block/coal/ember" },
 		"ashes": { "base": "game:block/wood/firepit/ground" },

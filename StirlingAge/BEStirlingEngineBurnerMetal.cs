@@ -25,4 +25,11 @@ public class BlockEntityStirlingEngineBurnerMetal : BlockEntityStirlingEngineBur
         Api.World.BlockAccessor.ExchangeBlock(block.Id, Pos);
         this.Block = block;
     }
+
+    public string GetBlockName()
+    {
+        string metal = Block.Variant["metal"];
+        Api.Logger.Log(EnumLogType.Notification, $"BEStirlingEngineBurnerMetal: GetBlockName() called; metal = {metal}");
+        return Lang.Get("stirlingage:stirlingengineburnermetaltemplate", Lang.Get("stirlingage:metal-" + metal));
+    }
 }

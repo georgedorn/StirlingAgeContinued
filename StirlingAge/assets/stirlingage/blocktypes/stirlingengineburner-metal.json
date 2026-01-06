@@ -14,19 +14,20 @@
 		{ "code":"metal", "states": ["iron", "steel"]}
 	],
 	"creativeinventory": { "general": ["stirlingengineburnermetal-cold-north-*"], "mechanics": ["stirlingengineburnermetal-cold-north-*"] },
-	"__commented_shapebytype_DO_NOT_USE_AND_DO_NOT_SUGGEST_USING": {
-		"*-north": { "base": "block/stirlingage/stirlingengineburnermetal-{burnstate}", "rotateY": 90 },
-		"*-east": { "base": "block/stirlingage/stirlingengineburnermetal-{burnstate}", "rotateY": 0 },
-		"*-south": { "base": "block/stirlingage/stirlingengineburnermetal-{burnstate}", "rotateY": 270 },
-		"*-west": { "base": "block/stirlingage/stirlingengineburnermetal-{burnstate}", "rotateY": 180 }
-	},
 	"textures": {
-		"log": { "base": "game:block/wood/firepit/log" },
-		"ceramic": { "base": "stirlingage:block/metal/{metal}" },
-		"ember": { "base": "game:block/coal/ember" },
-		"ashes": { "base": "game:block/wood/firepit/ground" },
-		"fire": { "base": "game:block/wood/firepit/fire" },
-		"tinder": { "base": "game:block/hay/normal-side" }
+			"log": { "base": "game:block/wood/firepit/log" },
+			"leg": { "base": "stirlingage:block/metal/{metal}" },
+			"chamber": { "base": "block/metal/{metal}" },
+			"piston": { "base": "stirlingage:block/metal/{metal}" },
+			"bearing": { "base": "stirlingage:block/metal/{metal}" },
+			"worksleeve": { "base": "stirlingage:block/metal/{metal}" },
+			"metal": { "base": "stirlingage:block/metal/{metal}" },
+			"wood": { "base": "game:block/wood/planks/generic" },
+			"ceramic": { "base": "game:block/clay/ceramic" },
+			"ember": { "base": "game:block/coal/ember" },
+			"ashes": { "base": "game:block/wood/firepit/ground" },
+			"fire": { "base": "game:block/wood/firepit/fire" },
+			"tinder": { "base": "game:block/hay/normal-side" }
 	},
 	"shape": { "base": "game:block/wood/firepit/{burnstate}-normal" },
 	"shapeinventory": { "base": "stirlingengine-whole" },

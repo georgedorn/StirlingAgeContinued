@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
@@ -62,6 +63,65 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable, IWrenchOrienta
                 }
             };
         });
+
+        // COMPREHENSIVE TEXTURE RESOLUTION DEBUGGING
+        if (api is ICoreClientAPI capi)
+        {
+            api.Logger.Notification($"=== TEXTURE DEBUGGING START: {Code} ===");
+
+            // 1. Log all available textures in block definition
+            api.Logger.Notification($"Block Textures Count: {(Textures != null ? Textures.Count : 0)}");
+            if (Textures != null)
+            {
+                foreach (var textureKey in Textures.Keys)
+                {
+                    var compositeTexture = Textures[textureKey];
+                    api.Logger.Notification($"  Texture Key: {textureKey}");
+                    api.Logger.Notification($"    Base Path: {compositeTexture?.Base?.ToString()}");
+                    api.Logger.Notification($"    Domain: {compositeTexture?.Base?.Domain}");
+                    api.Logger.Notification($"    Path: {compositeTexture?.Base?.Path}");
+
+                    // Test if texture asset exists
+                    if (compositeTexture?.Base != null)
+                    {
+                        try
+                        {
+                            var textureAsset = capi.Assets.TryGet(compositeTexture.Base.Clone().WithPathPrefixOnce("textures/"));
+                            api.Logger.Notification($"    Asset Exists: {textureAsset != null}");
+                            if (textureAsset == null)
+                            {
+                                api.Logger.Warning($"    MISSING TEXTURE: {compositeTexture.Base}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            api.Logger.Error($"    Texture Check Error: {ex.Message}");
+                        }
+                    }
+                }
+            }
+
+            // 2. Log shape information
+                try
+                {
+                    Shape blockShape = Vintagestory.API.Common.Shape.TryGet(capi, Shape?.Base?.Clone());
+                    if (blockShape != null)
+                    {
+                        api.Logger.Notification($"Shape: {blockShape.ToString()}");
+                        api.Logger.Notification($"Shape Elements: {blockShape.Elements?.Length}");
+                    }
+                    else
+                    {
+                        api.Logger.Warning($"Shape not found: {Shape?.Base?.ToString()}");
+                    }
+                }
+            catch (Exception ex)
+            {
+                api.Logger.Error($"Shape Analysis Error: {ex.Message}");
+            }
+
+            api.Logger.Notification($"=== TEXTURE DEBUGGING END: {Code} ===");
+        }
     }
 
     public bool IsOrientedTo(BlockFacing facing)
@@ -249,7 +309,32 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable, IWrenchOrienta
             return false;
         }
 
-    public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir) {
-        // TODO: Implement proper rotation logic later
-    }
+        public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir) {
+            // TODO: Implement proper rotation logic later
+            // This is only needed if we want to implement "wrenchable"
+        }
+
+        public override string GetHeldItemName(ItemStack itemStack)
+        {
+            // Only handle metal variants - let clay variants use the default translation system
+            if (itemStack.Collectible.Code.Path.Contains("metal"))
+            {
+                string metal = itemStack.Collectible.Variant["metal"];
+                return Lang.Get("stirlingage:stirlingengineburnermetaltemplate", Lang.Get("stirlingage:metal-" + metal));
+            }
+            // For clay variants, use the base implementation which will handle wildcards properly
+            return base.GetHeldItemName(itemStack);
+        }
+
+        public override string GetPlacedBlockName(IWorldAccessor world, BlockPos pos)
+        {
+            // Only handle metal variants - let clay variants use the default translation system
+            if (Code.Path.Contains("metal"))
+            {
+                string metal = Variant["metal"];
+                return Lang.Get("stirlingage:stirlingengineburnermetaltemplate", Lang.Get("stirlingage:metal-" + metal));
+            }
+            // For clay variants, use the base implementation which will handle wildcards properly
+            return base.GetPlacedBlockName(world, pos);
+        }
 }

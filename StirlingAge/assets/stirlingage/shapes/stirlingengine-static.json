@@ -4,10 +4,6 @@
   "textureHeight": 16,
   "textureSizes": {},
   "textures": {
-    "metal": "game:item/resource/plate/copper",
-    "fireceramic": "game:block/clay/hardened/fire2",
-    "wood": "game:block/wood/planks/generic",
-    "ceramic": "game:block/clay/ceramic"
   },
   "elements": [
     {
