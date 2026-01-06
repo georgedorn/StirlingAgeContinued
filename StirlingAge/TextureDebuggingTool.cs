@@ -211,20 +211,20 @@ public class TextureDebuggingTool
             {
                 if (reportedFoundTextures.Add(textureKey))
                 {
-                    logger.Notification($"✓ {textureLocation} -> {foundPath}");
+                    logger.Notification($"{textureLocation} -> {foundPath}");
                 }
             }
             else
             {
                 if (reportedMissingTextures.Add(textureKey))
                 {
-                    logger.Error($"✗ MISSING: {textureLocation}");
+                    logger.Error($"MISSING: {textureLocation}");
                 }
             }
         }
         catch (Exception ex)
         {
-            logger.Error($"✗ Error checking {textureLocation}: {ex.Message}");
+            logger.Error($"Error checking {textureLocation}: {ex.Message}");
         }
     }
 
