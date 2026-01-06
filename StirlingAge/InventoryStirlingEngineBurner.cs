@@ -9,21 +9,24 @@ using Vintagestory.API.MathTools;
 public class InventoryStirlingEngineBurner : InventoryBase, ISlotProvider
 {
     ItemSlot[] slots;
-    public BlockPos pos;
+    public BlockPos? pos;
 
     public ItemSlot[] Slots {
         get { return slots; }
     }
 
     public InventoryStirlingEngineBurner(string inventoryID, ICoreAPI api) : base(inventoryID, api) {
-        slots = GenEmptySlots(1);
-        baseWeight = 4f;
+        // Empty because CSharp is stooooopid.    
     }
 
-    public InventoryStirlingEngineBurner(string className, string instanceID, ICoreAPI api) : base(className, instanceID, api) {
+    public override void LateInitialize(string inventoryID, ICoreAPI api)
+    {
         slots = GenEmptySlots(1);
         baseWeight = 4f;
+        base.LateInitialize(inventoryID, api);
     }
+
+
 
     public override int Count {
         get { return slots.Length; }
@@ -31,7 +34,7 @@ public class InventoryStirlingEngineBurner : InventoryBase, ISlotProvider
 
     public override ItemSlot this[int slotId] {
         get {
-            if (slotId < 0 || slotId >= Count) return null;
+            if (slotId < 0 || slotId >= Count) throw new ArgumentOutOfRangeException(nameof(slotId));
             return slots[slotId];
         }
         set {
@@ -59,7 +62,7 @@ public class InventoryStirlingEngineBurner : InventoryBase, ISlotProvider
 
     protected override ItemSlot NewSlot(int i) {
         if (i == 0) return new ItemSlotSurvival(this); // Fuel
-        else return null;
+        else throw new ArgumentOutOfRangeException(nameof(i));
     }
 
 

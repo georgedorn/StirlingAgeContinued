@@ -18,10 +18,111 @@ public class StirlingEngineRotorRenderer : MechBlockRenderer {
     Vec3f axisCenter = new Vec3f(0.5f, 0.5f, 0.5f);
 
     public StirlingEngineRotorRenderer(ICoreClientAPI capi, MechanicalPowerMod mechanicalPowerMod, Block textureSourceBlock, CompositeShape shapeLoc) : base(capi, mechanicalPowerMod) {
-        MeshData meshDataStatic = null;
-        MeshData meshDataAxle = null;
-        MeshData meshDataWork = null;
-        MeshData meshDataDisplace = null;
+        // COMPREHENSIVE SHAPE AND TEXTURE ANALYSIS
+        capi.Logger.Notification($"=== ROTOR RENDERER DEBUGGING START ===");
+        capi.Logger.Notification($"Texture Source Block: {textureSourceBlock?.Code}");
+        capi.Logger.Notification($"Texture Source Block ID: {textureSourceBlock?.BlockId}");
+
+        // Analyze texture source block textures
+        if (textureSourceBlock != null && textureSourceBlock.Textures != null)
+        {
+            capi.Logger.Notification($"Texture Source Block Textures:");
+            foreach (var textureKey in textureSourceBlock.Textures.Keys)
+            {
+                var compositeTexture = textureSourceBlock.Textures[textureKey];
+                capi.Logger.Notification($"  {textureKey}: {compositeTexture?.Base?.ToString()}");
+
+                // Test texture resolution
+                if (compositeTexture?.Base != null)
+                {
+                    try
+                    {
+                        var textureAsset = capi.Assets.TryGet(compositeTexture.Base.Clone().WithPathPrefixOnce("textures/"));
+                        capi.Logger.Notification($"    Exists: {textureAsset != null}");
+                    }
+                    catch (Exception ex)
+                    {
+                        capi.Logger.Error($"    Check Error: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        // Analyze all shapes used by this renderer
+        string[] shapeNames = {
+            "stirlingengine-static.json",
+            "stirlingengine-axle.json",
+            "stirlingengine-workpiston.json",
+            "stirlingengine-displacerpiston.json",
+            "stirlingengine-whole.json"
+        };
+
+        foreach (var shapeName in shapeNames)
+        {
+            try
+            {
+                Shape shape = Vintagestory.API.Common.Shape.TryGet(capi, new AssetLocation($"stirlingage:shapes/{shapeName}"));
+                capi.Logger.Notification($"=== SHAPE ANALYSIS: {shapeName} ===");
+
+                if (shape != null)
+                {
+                    capi.Logger.Notification($"Shape Elements: {shape.Elements?.Length}");
+                    capi.Logger.Notification($"Shape Texture Definitions: {shape.TextureWidth}x{shape.TextureHeight}");
+
+                    // Analyze each element and its textures
+                    if (shape.Elements != null)
+                    {
+                        foreach (var element in shape.Elements)
+                        {
+                            capi.Logger.Notification($"Element: {element.Name}");
+                            if (element.Faces != null)
+                            {
+                                foreach (var faceEntry in element.Faces)
+                                {
+                                    var face = faceEntry.Value;
+                                    capi.Logger.Notification($"  Face {faceEntry.Key}: texture='#{face.Texture}', uv=[{string.Join(",", face.Uv)}]");
+
+                                    // Check if this is a placeholder texture
+                                    if (!string.IsNullOrEmpty(face.Texture) && face.Texture.StartsWith("#"))
+                                    {
+                                        string textureKey = face.Texture.Substring(1); // Remove #
+                                        capi.Logger.Notification($"    Placeholder texture: {textureKey}");
+
+                                        // Check if textureSourceBlock has this texture
+                                        if (textureSourceBlock != null && textureSourceBlock.Textures != null &&
+                                            textureSourceBlock.Textures.ContainsKey(textureKey))
+                                        {
+                                            var sourceTexture = textureSourceBlock.Textures[textureKey];
+                                            capi.Logger.Notification($"    Resolved to: {sourceTexture?.Base?.ToString()}");
+                                        }
+                                        else
+                                        {
+                                            capi.Logger.Warning($"    UNRESOLVED TEXTURE: {textureKey} - No mapping found in texture source block!");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    capi.Logger.Warning($"Shape not found: {shapeName}");
+                }
+            }
+            catch (Exception ex)
+            {
+                capi.Logger.Error($"Shape Analysis Error for {shapeName}: {ex.Message}");
+            }
+        }
+
+        capi.Logger.Notification($"=== SHAPE ANALYSIS COMPLETE ===");
+
+        // Now proceed with normal mesh creation
+        MeshData meshDataStatic;
+        MeshData meshDataAxle;
+        MeshData meshDataWork;
+        MeshData meshDataDisplace;
 
         Vec3f rotVec = new Vec3f(shapeLoc.rotateX, shapeLoc.rotateY, shapeLoc.rotateZ);
 

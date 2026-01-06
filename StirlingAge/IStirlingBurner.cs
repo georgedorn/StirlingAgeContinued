@@ -2,4 +2,5 @@
 public interface IStirlingBurner {
     float HotSideTemperature { get; }
     float ColdSideTemperature { get; }
+    string Material { get; }
 }

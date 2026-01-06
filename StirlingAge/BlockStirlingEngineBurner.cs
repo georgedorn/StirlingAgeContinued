@@ -1,24 +1,38 @@
 /* Based on BlockCreativeRotor.cs and BlockFirepit.cs and BlockPulverizer.cs
    from vssurvivalmod */
 
+// TODO: It may be impossible to keep this file as-is, it may need to be refactored into Base, Clay and Metal as with the BlockEntity classes.
+
+using System;
 using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 
-public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
+public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable, IWrenchOrientable {
 
     public bool IsExtinct;
 
-    private BlockFacing our_orientation;
+    private BlockFacing our_orientation = default;
 
-    WorldInteraction[] interactions;
+    WorldInteraction[] interactions = System.Array.Empty<WorldInteraction>();
 
     public override void OnLoaded(ICoreAPI api) {
         base.OnLoaded(api);
+        List<String> validSides = new List<String>();
+        validSides.Add("north");
+        validSides.Add("south");
+        validSides.Add("east");
+        validSides.Add("west");
+
+        if (!validSides.Contains(Variant["side"])){
+            api.Logger.Log(EnumLogType.Error, "Tried to load a Burner block with a 'side' of " + Variant["side"]);
+            return;
+        }
         our_orientation = BlockFacing.FromFirstLetter(Variant["side"][0]);
         interactions = ObjectCacheUtil.GetOrCreate(api, "stirlingEngineInteractions", () => {
             List<ItemStack> canIgniteStacks = BlockBehaviorCanIgnite.CanIgniteStacks(api, true);
@@ -34,7 +48,7 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
                     HotKeyCode = "shift",
                     Itemstacks = canIgniteStacks.ToArray(),
                     GetMatchingStacks = (wi, bs, es) => {
-                        BlockEntityStirlingEngineBurner bef = api.World.BlockAccessor.GetBlockEntity(bs.Position) as BlockEntityStirlingEngineBurner;
+                        BlockEntityStirlingEngineBurnerBase bef = api.World.BlockAccessor.GetBlockEntity(bs.Position) as BlockEntityStirlingEngineBurnerBase;
                         if (bef?.fuelSlot != null && !bef.fuelSlot.Empty && !bef.IsBurning)
                         {
                             return wi.Itemstacks;
@@ -49,6 +63,65 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
                 }
             };
         });
+
+        // COMPREHENSIVE TEXTURE RESOLUTION DEBUGGING
+        if (api is ICoreClientAPI capi)
+        {
+            api.Logger.Notification($"=== TEXTURE DEBUGGING START: {Code} ===");
+
+            // 1. Log all available textures in block definition
+            api.Logger.Notification($"Block Textures Count: {(Textures != null ? Textures.Count : 0)}");
+            if (Textures != null)
+            {
+                foreach (var textureKey in Textures.Keys)
+                {
+                    var compositeTexture = Textures[textureKey];
+                    api.Logger.Notification($"  Texture Key: {textureKey}");
+                    api.Logger.Notification($"    Base Path: {compositeTexture?.Base?.ToString()}");
+                    api.Logger.Notification($"    Domain: {compositeTexture?.Base?.Domain}");
+                    api.Logger.Notification($"    Path: {compositeTexture?.Base?.Path}");
+
+                    // Test if texture asset exists
+                    if (compositeTexture?.Base != null)
+                    {
+                        try
+                        {
+                            var textureAsset = capi.Assets.TryGet(compositeTexture.Base.Clone().WithPathPrefixOnce("textures/"));
+                            api.Logger.Notification($"    Asset Exists: {textureAsset != null}");
+                            if (textureAsset == null)
+                            {
+                                api.Logger.Warning($"    MISSING TEXTURE: {compositeTexture.Base}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            api.Logger.Error($"    Texture Check Error: {ex.Message}");
+                        }
+                    }
+                }
+            }
+
+            // 2. Log shape information
+                try
+                {
+                    Shape blockShape = Vintagestory.API.Common.Shape.TryGet(capi, Shape?.Base?.Clone());
+                    if (blockShape != null)
+                    {
+                        api.Logger.Notification($"Shape: {blockShape.ToString()}");
+                        api.Logger.Notification($"Shape Elements: {blockShape.Elements?.Length}");
+                    }
+                    else
+                    {
+                        api.Logger.Warning($"Shape not found: {Shape?.Base?.ToString()}");
+                    }
+                }
+            catch (Exception ex)
+            {
+                api.Logger.Error($"Shape Analysis Error: {ex.Message}");
+            }
+
+            api.Logger.Notification($"=== TEXTURE DEBUGGING END: {Code} ===");
+        }
     }
 
     public bool IsOrientedTo(BlockFacing facing)
@@ -65,35 +138,63 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
         // also, we want to face away anyway
         BlockFacing[] horVer = Block.SuggestedHVOrientation(byPlayer, blockSel);
         horVer[0] = horVer[0].Opposite;
+
+        api.Logger.Log(EnumLogType.Notification, $"StirlingEngineBurner TryPlaceBlock: requested facing {horVer[0]}, current facing {our_orientation}");
+
         if(our_orientation != horVer[0]) {
-            Block b = api.World.BlockAccessor.GetBlock(CodeWithVariant("side", horVer[0].Code));
-            if(b != null) {
-                return b.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
+            api.Logger.Log(EnumLogType.Notification, $"Orientation mismatch, trying to find block with variant {horVer[0].Code}");
+
+            // Handle both clay and metal variants
+            string variantKey = "side";
+            string variantValue = horVer[0].Code;
+
+            // For metal blocks, we also need to preserve the metal type variant
+            if (Code.Path.Contains("metal")) {
+                api.Logger.Log(EnumLogType.Notification, $"Detected metal burner, preserving metal variant: {Variant["metal"]}");
+                // Need to get block with both side and metal variants
+                Block b = api.World.BlockAccessor.GetBlock(CodeWithVariants(new string[]{"side", "metal"}, new string[]{variantValue, Variant["metal"]}));
+                if(b != null) {
+                    api.Logger.Log(EnumLogType.Notification, $"Found metal variant block: {b.Code}, delegating placement");
+                    return b.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
+                }
+            } else {
+                // Clay blocks only have side variant
+                Block b = api.World.BlockAccessor.GetBlock(CodeWithVariant(variantKey, variantValue));
+                if(b != null) {
+                    api.Logger.Log(EnumLogType.Notification, $"Found clay variant block: {b.Code}, delegating placement");
+                    return b.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
+                }
             }
+
+            api.Logger.Log(EnumLogType.Error, $"Failed to find variant block for orientation {horVer[0].Code}");
         }
 
+        api.Logger.Log(EnumLogType.Notification, $"StirlingEngineBurner TryPlaceBlock called for {Code} at {blockSel.Position}");
         bool ok = base.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
         if (ok) {
+            api.Logger.Log(EnumLogType.Notification, $"StirlingEngineBurner placement successful, calling WasPlaced");
             WasPlaced(world, blockSel.Position, null);
+        } else {
+            api.Logger.Log(EnumLogType.Error, $"StirlingEngineBurner placement failed");
         }
         return ok;
     }
 
     EnumIgniteState IIgnitable.OnTryIgniteStack(EntityAgent byEntity, BlockPos pos, ItemSlot slot, float secondsIgniting)
     {
-        BlockEntityStirlingEngineBurner burner = api.World.BlockAccessor.GetBlockEntity(pos) as BlockEntityStirlingEngineBurner;
+        BlockEntityStirlingEngineBurnerBase burner = api.World.BlockAccessor.GetBlockEntity(pos) as BlockEntityStirlingEngineBurnerBase;
         if (burner == null) return EnumIgniteState.NotIgnitable;
         if (burner.IsBurning) return secondsIgniting > 2 ? EnumIgniteState.IgniteNow : EnumIgniteState.Ignitable;
         return EnumIgniteState.NotIgnitable;
     }
     public EnumIgniteState OnTryIgniteBlock(EntityAgent byEntity, BlockPos pos, float secondsIgniting) {
-        BlockEntityStirlingEngineBurner burner = api.World.BlockAccessor.GetBlockEntity(pos) as BlockEntityStirlingEngineBurner;
+        BlockEntityStirlingEngineBurnerBase burner = api.World.BlockAccessor.GetBlockEntity(pos) as BlockEntityStirlingEngineBurnerBase;
         if (burner == null) return EnumIgniteState.NotIgnitable;
         return burner.GetIgnitableState(secondsIgniting);
     }
 
     public void OnTryIgniteBlockOver(EntityAgent byEntity, BlockPos pos, float secondsIgniting, ref EnumHandling handling) {
-        BlockEntityStirlingEngineBurner burner = api.World.BlockAccessor.GetBlockEntity(pos) as BlockEntityStirlingEngineBurner;
+        BlockEntityStirlingEngineBurnerBase burner = api.World.BlockAccessor.GetBlockEntity(pos) as BlockEntityStirlingEngineBurnerBase;
         if (burner != null && !burner.canIgniteFuel)
         {
             burner.canIgniteFuel = true;
@@ -106,7 +207,7 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel) {
         ItemStack stack = byPlayer.InventoryManager.ActiveHotbarSlot?.Itemstack;
 
-        BlockEntityStirlingEngineBurner burner = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BlockEntityStirlingEngineBurner;
+        BlockEntityStirlingEngineBurnerBase burner = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BlockEntityStirlingEngineBurnerBase;
         
         if (burner!=null && stack?.Block != null && stack.Block.HasBehavior<BlockBehaviorCanIgnite>() && burner.GetIgnitableState(0) == EnumIgniteState.Ignitable)
         {
@@ -137,28 +238,51 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
         return base.OnBlockInteractStart(world, byPlayer, blockSel);
     }
 
-    public override void WasPlaced(IWorldAccessor world, BlockPos ownPos, BlockFacing connectedOnFacing)
+    public override void WasPlaced(IWorldAccessor world, BlockPos ownPos, BlockFacing? connectedOnFacing)
     {
         base.WasPlaced(world, ownPos, connectedOnFacing);
+        api.Logger.Log(EnumLogType.Notification, $"StirlingEngineBurner placed at {ownPos}");
         PlaceFakeBlock(world, ownPos);
     }
 
     private void PlaceFakeBlock(IWorldAccessor world, BlockPos pos)
     {
-        AssetLocation loc = new AssetLocation("stirlingage:stirlingenginerotor-"+Variant["side"]);
+        api.Logger.Log(EnumLogType.Notification, $"PlaceFakeBlock called for burner at {pos}, variant side: {Variant["side"]}");
+
+        // Fix: Use proper AssetLocation construction with variant (hyphen format)
+        AssetLocation loc = new AssetLocation("stirlingage:stirlingenginerotor-" + Variant["side"]);
+        api.Logger.Log(EnumLogType.Notification, $"Attempting to place rotor with AssetLocation: {loc}");
+
         Block toPlaceBlock = world.GetBlock(loc);
         if(toPlaceBlock == null) {
             api.Logger.Log(EnumLogType.Error, "no block found for "+loc.ToString());
+            // Try to list available rotor blocks for debugging
+            foreach (var block in world.Blocks)
+            {
+                if (block.Code.Path.Contains("stirlingenginerotor"))
+                {
+                    api.Logger.Log(EnumLogType.Notification, "Available rotor block: " + block.Code);
+                }
+            }
         }
         else {
+            api.Logger.Log(EnumLogType.Notification, $"Setting block {toPlaceBlock.Code} at position {pos.UpCopy()}");
             world.BlockAccessor.SetBlock(toPlaceBlock.BlockId, pos.UpCopy());
+
+            // Verify the block was placed
+            Block placedBlock = world.BlockAccessor.GetBlock(pos.UpCopy());
+            if(placedBlock.BlockId == toPlaceBlock.BlockId) {
+                api.Logger.Log(EnumLogType.Notification, $"Successfully placed rotor block {placedBlock.Code} at {pos.UpCopy()}");
+            } else {
+                api.Logger.Log(EnumLogType.Error, $"Failed to place rotor block. Expected {toPlaceBlock.Code}, got {placedBlock.Code} at {pos.UpCopy()}");
+            }
         }
     }
 
-    public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
+    public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer? byPlayer, float dropQuantityMultiplier = 1)
     {
         Block upBlock = api.World.BlockAccessor.GetBlock(pos.UpCopy());
-        if (upBlock.Code.BeginsWith("stirlingage", "stirlingenginerotor-"))
+        if (upBlock.Code.BeginsWith("stirlingage", "stirlingenginerotor"))
         {
             world.BlockAccessor.SetBlock(0, pos.UpCopy());
         }
@@ -181,7 +305,36 @@ public class BlockStirlingEngineBurner : BlockMPBase, IIgnitable {
         
     }
 
-    public override bool HasMechPowerConnectorAt(IWorldAccessor world, BlockPos pos, BlockFacing face) {
-        return false;
-    }
+        public override bool HasMechPowerConnectorAt(IWorldAccessor world, BlockPos pos, BlockFacing face) {
+            return false;
+        }
+
+        public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir) {
+            // TODO: Implement proper rotation logic later
+            // This is only needed if we want to implement "wrenchable"
+        }
+
+        public override string GetHeldItemName(ItemStack itemStack)
+        {
+            // Only handle metal variants - let clay variants use the default translation system
+            if (itemStack.Collectible.Code.Path.Contains("metal"))
+            {
+                string metal = itemStack.Collectible.Variant["metal"];
+                return Lang.Get("stirlingage:stirlingengineburnermetaltemplate", Lang.Get("stirlingage:metal-" + metal));
+            }
+            // For clay variants, use the base implementation which will handle wildcards properly
+            return base.GetHeldItemName(itemStack);
+        }
+
+        public override string GetPlacedBlockName(IWorldAccessor world, BlockPos pos)
+        {
+            // Only handle metal variants - let clay variants use the default translation system
+            if (Code.Path.Contains("metal"))
+            {
+                string metal = Variant["metal"];
+                return Lang.Get("stirlingage:stirlingengineburnermetaltemplate", Lang.Get("stirlingage:metal-" + metal));
+            }
+            // For clay variants, use the base implementation which will handle wildcards properly
+            return base.GetPlacedBlockName(world, pos);
+        }
 }

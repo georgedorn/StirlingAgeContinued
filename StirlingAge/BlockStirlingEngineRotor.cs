@@ -7,13 +7,13 @@ using Vintagestory.GameContent.Mechanics;
 
 public class BlockStirlingEngineRotor : BlockMPBase
 {
-    BlockFacing powerOutFacing;
+    BlockFacing powerOutFacing = default;
 
     public override void OnLoaded(ICoreAPI api) {
         powerOutFacing = BlockFacing.FromCode(Variant["side"]).Opposite;
     }
 
-    public override float OnGettingBroken(IPlayer player, BlockSelection blockSel, ItemSlot itemslot, float remainingResistance, float dt, int counter)
+    public override float OnGettingBroken(IPlayer? player, BlockSelection blockSel, ItemSlot itemslot, float remainingResistance, float dt, int counter)
     {
         IWorldAccessor world = player?.Entity?.World;
         if (world == null) world = api.World;
@@ -31,12 +31,7 @@ public class BlockStirlingEngineRotor : BlockMPBase
         return principalBlock.OnGettingBroken(player, bs, itemslot, remainingResistance, dt, counter);
     }
 
-    public override void OnBlockPlaced(IWorldAccessor world, BlockPos blockPos, ItemStack byItemStack = null)
-    {
-        base.OnBlockPlaced(world, blockPos, byItemStack);
-    }
-
-    public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
+    public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer? byPlayer, float dropQuantityMultiplier = 1f)
     {
         // being broken by player: break the main block instead
         IBlockAccessor blockAccess = api.World.BlockAccessor;
